@@ -1,0 +1,102 @@
+/* Taken from getting started guide at: https://leafletjs.com/examples/quick-start/ */
+@import 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
+@import 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap';
+
+/* These CSS variables are global, so they are available in all CSS modules */
+:root {
+  --color-brand--1: #ffb545;
+  --color-brand--2: #00c46a;
+
+  --color-dark--0: #242a2e;
+  --color-dark--1: #2d3439;
+  --color-dark--2: #42484d;
+  --color-light--1: #aaa;
+  --color-light--2: #ececec;
+  --color-light--3: #d6dee0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  font-size: 62.5%;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Manrope', sans-serif;
+  color: var(--color-light--2);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+label {
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  font-family: inherit;
+  font-size: 1.6rem;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--color-light--3);
+  transition: all 0.2s;
+}
+
+input:focus {
+  outline: none;
+  background-color: #fff;
+}
+
+.cta:link,
+.cta:visited {
+  display: inline-block;
+  background-color: var(--color-brand--2);
+  color: var(--color-dark--1);
+  text-transform: uppercase;
+  text-decoration: none;
+  font-size: 1.6rem;
+  font-weight: 600;
+  padding: 1rem 3rem;
+  border-radius: 5px;
+}
+
+/*
+"importCSSModule": {
+    "prefix": "csm",
+    "scope": "javascript,typescript,javascriptreact",
+    "body": ["import styles from './${TM_FILENAME_BASE}.module.css'"],
+    "description": "Import CSS Module as `styles`"
+  },
+*/
+
+/* in modules we need to define class names meaning we should not use the element selectors as it is not a good idea because we will then select all the elements of which the selector we defined */
+
+/* CSS module take our class name that we defined ourselves and then they attach random ids at the end if we were to take a look in the development tools in the console because if we then create the same name class in other CSS module that will get a different random id making both in the end different classes which is the reason why we use CSS modules in order to avoid mistakes like that which can be made when we use global CSS styles */
+
+/* sometimes global CSS is needed for like a global reset or setting some font properties on the body and we can also define global CSS in CSS modules by using the global function
+
+:global(.className)
+
+and also the reason when we are importing CSS modules we use the word styles because id are added at the end with random numbers so that's why we do
+
+styles.className
+
+so that we can identify where it is coming from and to add the global class we just add it just like any other class */
+
+/* now we use the global function in order to style the active link meaning the page which is currently active gets the active class attached to it which happens by default because of react router so if we were to do
+
+.nav .active
+
+it would not work because CSS modules will see this class and then add random ids/strings to it making it different so the solution to that is to use global function and global function is mostly important when we are working with some classes that are provided from external sources just like active class given to us by react router so if we want to style that we will have to use global function */
+
+/* usually when we want to define some global classes we would not do it inside a module but just inside our global CSS but that isn't case for the above scenario and there is also something else which is called composing classes */
+
+/* in CSS modules we write our class names in the JS way of writing variables (camelCase) instead of normal CSS way because if we write it in the normal way then it would be a lot harder to then get it into our JSX */
