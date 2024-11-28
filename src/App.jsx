@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 
 import Homepage from './pages/Homepage';
 import Pricing from './pages/Pricing';
@@ -11,53 +10,39 @@ import CityList from './components/CityList';
 import CountryList from './components/CountryList';
 import City from './components/City';
 import Form from './components/Form';
-
-const BASE_URL = 'http://localhost:8000';
+import { CitiesProvider } from './contexts/CitiesContext';
+import { AuthProvider } from './contexts/FakeAuthContent';
+import ProtectedRoute from './pages/ProtectedRoute';
 
 function App() {
-  const [cities, setCities] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(function () {
-    async function fetchCities() {
-      try {
-        setIsLoading(true);
-        const res = await fetch(`${BASE_URL}/cities`);
-        const data = await res.json();
-        setCities(data);
-      } catch (err) {
-        alert('There was an error loading data ...');
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchCities();
-  }, []);
-
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' /* or 'index' */ element={<Homepage />} />
-        <Route path='pricing' element={<Pricing />} />
-        <Route path='product' element={<Product />} />
-        <Route path='login' element={<Login />} />
-        <Route path='app' element={<AppLayout />}>
-          <Route index element={<Navigate replace to='cities' />} />
-          <Route
-            path='cities'
-            element={<CityList cities={cities} isLoading={isLoading} />}
-          />
-          <Route path='cities/:id' element={<City />} />
-          <Route
-            path='countries'
-            element={<CountryList cities={cities} isLoading={isLoading} />}
-          />
-          <Route path='form' element={<Form />} />
-        </Route>
-        <Route path='*' element={<PageNotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <CitiesProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path='/' /* or 'index' */ element={<Homepage />} />
+            <Route path='pricing' element={<Pricing />} />
+            <Route path='product' element={<Product />} />
+            <Route path='login' element={<Login />} />
+            <Route
+              path='app'
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate replace to='cities' />} />
+              <Route path='cities' element={<CityList />} />
+              <Route path='cities/:id' element={<City />} />
+              <Route path='countries' element={<CountryList />} />
+              <Route path='form' element={<Form />} />
+            </Route>
+            <Route path='*' element={<PageNotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </CitiesProvider>
+    </AuthProvider>
   );
 }
 
@@ -112,3 +97,17 @@ we can configure all kinds of things about development and building of our proje
 /* now in the country list we receive the cities array as a prop and from these cities we are going to derive the countries so we are derive them there in the component 'countriesList' or right here in this component where we have the cities state defined then we can pass those countries into the 'countryList' component as prop  */
 
 /* in the 'countryList' component we receive the cities array as a prop and from these cities we are going to derive the countries so we are going to do that there because that operation only need to happen when the component is executed and not here in the app component as we have the cities state here so we can derive the state passing the countries directly to 'countryList' component as prop but we don't do it like this because if we do it here then it will happen each time the application re-renders meaning each time the app component is executed again so we should also start thinking about these kind of things too because it affects performance as if we do it in app component it gets executed again and again whilst if we do that there it only gets executed when it is necessary */
+
+/* now to implement a map in our application we use a third party package but first we are gonna install it
+
+command: npm install react-leaflet leaflet
+
+so leaflet is the base library meaning react leaflet is built on top of leaflet so we need to install both of them and leaflet is the biggest open source library to implement maps and whenever we bring in a third party library like we have now it is a good idea to check out the documentation and we also need to add leaflet CSS from the base leaflet website in our CSS file as well
+
+@import 'https://unpkg.com/leaflet@1.9.3/dist/leaflet.css';
+
+now we take the sample code from the react leaflet shown on the main page of the website */
+
+/* the last feature we are going to implement will be to add a fake authentication so in a typical front-end application like react user authentication usually works in three steps so first we get the user's email and password from a login form and check with an API endpoint if the password for the given user is correct then in the second step if the crendentials are actually correct we then redirect the user to our main application while also saving the user object in our state and finally in the third step we need to protect the application from unauthorized access meaning from users who are not currently logged in */
+
+/* now the part where the fake authentiation comes into place is basically the first step because we will not ask for the user credentials from an API but instead we are going to have a hard coded user object in our application and we will simply check if the user and passwords are correct so we are basically going to have only one user in this example but this is just to demonstrate how authentication works and in a real authentication we would use a database with real users */
